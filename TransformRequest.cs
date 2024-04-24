@@ -1,7 +1,9 @@
 namespace CodeTransform;
 
-public class TransformRequest
+public enum SourceType
 {
-    public string Prompt {get; set;}
-    public string SourceUrl {get; set;}
+    File,
+    Repository
 }
+
+public record TransformRequest(string Prompt, string SourceUrl, SourceType SourceType);

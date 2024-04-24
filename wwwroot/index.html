@@ -15,13 +15,22 @@
       <textarea style="width: 90%; margin-left: 20px; height: 150px;" id="prompt" name="prompt">
         You are an expert C# developer.  You are incrementally converting an ASP.NET Framework application to the latest version of ASP.NET core, please convert the contents of this file from ASP.NET Framework to the latest version of ASP.NET core and return the complete cs file.
       </textarea><br>
-      <label for="sourceUrl">Source URL:</label><br>
-      <input style="width: 90%; margin-left: 20px;" type="text" id="sourceUrl" name="sourceUrl" value="https://raw.githubusercontent.com/jjdelorme/ContosoUniversity/master/ContosoUniversity/Controllers/CourseController.cs"><br><br>
+      <label for="sourceUrl">Source URL:</label>
+      <input type="radio" id="fileRadio" name="sourceType" value="File" checked>
+      <label for="fileRadio">File</label>
+      <input type="radio" id="repoRadio" name="sourceType" value="Repository">
+      <label for="repoRadio">Repository</label>
+      <br>
+      <input style="width: 90%; margin-left: 20px;" type="text" id="sourceUrl" name="sourceUrl" value="https://raw.githubusercontent.com/jjdelorme/ContosoUniversity/master/ContosoUniversity/Controllers/CourseController.cs"><br>
+      <div style="font-size: small; margin-left: 25px; margin-top: 10px; margin-bottom: 15px;">
+        <strong>File:&nbsp;&nbsp;</strong>https://raw.githubusercontent.com/{owner}/{repo}/{reference}/FileDir/File.cs<br> 
+        <strong>Repository:&nbsp;&nbsp;</strong>https://api.github.com/repos/{owner}/{repo}/zipball/{reference}<br>
+      </div>
       <input type="submit" id="submit" value="Submit">
     </form> 
     
-    <br><hr><br>
-    <label id="responseLabel" for="responseArea"></label><br>
+    <br><hr>
+    <label style="display: none;" id="responseLabel" for="responseArea"></label>
     <md-block style="width: 90%; margin-left: 20px; height: calc(100vh - 400px)" id="responseArea" name="responseArea">
     </md-block>
 

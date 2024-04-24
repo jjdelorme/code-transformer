@@ -1,5 +1,7 @@
 using Google.Cloud.AIPlatform.V1;
 using Microsoft.Extensions.Options;
+using System.IO.Compression;
+using System.Text;
 
 namespace CodeTransform;
 
@@ -35,11 +37,23 @@ public class Transformer
     /// Executes a code transformation given a prompt and the url of a file.
     /// </summary>
     /// <example>"Generate a random quote from a fictional person."</example>
-    public async Task<string> GenerateAsync(string prompt, string filename)
+    public async Task<string> GenerateAsync(TransformRequest request)
     {
-        var fileContents = await GetFileContents(filename);
+        string fileContents;
 
-        var enrichedPrompt = $"{prompt}\n\n<code>\n{fileContents}\n</code>";
+        switch (request.SourceType)
+        {
+            case SourceType.File:
+                fileContents = await GetFileContents(request.SourceUrl);
+                break;
+            case SourceType.Repository:
+                fileContents = await GetFileContentsFromGit(request.SourceUrl);
+                break;
+            default:
+                throw new NotImplementedException();
+        }       
+
+        var enrichedPrompt = $"{request.Prompt}\n\n<code>\n{fileContents}\n</code>";
 
         var result = await GenerateTextAsync(enrichedPrompt);
 
@@ -91,5 +105,56 @@ public class Transformer
             _logger.LogError(ex, "Error getting file contents from {url}", url);
             throw new ApplicationException("Error getting file contents", ex);
         }
+    }
+
+    private async Task<string> GetFileContentsFromGit(string url)
+    {
+        //var url = $"https://api.github.com/repos/{owner}/{repo}/zipball/{reference}";
+
+        var extractionDir = $"./bin/extracted"; // {owner}/{repo}/{reference}";
+        var sb = new StringBuilder();
+
+        try
+        {
+             // Required by github otherwise a 403 is returned
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", "jjdelorme");
+
+            using var response = await _httpClient.GetStreamAsync(url);
+
+            ZipFile.ExtractToDirectory(response, extractionDir);
+
+            foreach (var file in GetFilesRecursive(extractionDir, ["*.cs*", "*.config"]))
+            {
+                string code = await File.ReadAllTextAsync(file);
+
+                string text = $"<filename>{file}</filename>\n<code>\n{code}\n</code>";
+                sb.Append(text);
+            }
+
+            return sb.ToString();
+            
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting file contents from {url}", url);
+            throw new ApplicationException("Error getting file contents", ex);
+        }
+    }
+
+    private static IEnumerable<string> GetFilesRecursive(string directory, string[] filePattern)
+    {
+        var files = new List<string>();
+
+        filePattern.ToList().ForEach(pattern =>
+        {
+            files.AddRange(Directory.GetFiles(directory, pattern));
+        });
+
+        foreach (var dir in Directory.GetDirectories(directory))
+        {
+            files.AddRange(GetFilesRecursive(dir, filePattern));
+        }
+
+        return files;
     }
 }

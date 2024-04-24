@@ -1,11 +1,18 @@
 /// <summary>
 /// This application hosts a REST endpoint that transforms code using the Gemini Model.
 /// </summary>
+using System.Text.Json.Serialization;
 using CodeTransform;
+using Microsoft.AspNetCore.Http.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpClient();
+
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 builder.Services.Configure<TransformerOptions>(
     builder.Configuration.GetSection(TransformerOptions.Transformer));
@@ -28,7 +35,7 @@ app.MapPost("/transform", async (Transformer transformer, TransformRequest reque
 {
     try
     {
-        var result = await transformer.GenerateAsync(request.Prompt, request.SourceUrl);
+        var result = await transformer.GenerateAsync(request);
         
         if (result == null)
         {

@@ -7,7 +7,10 @@ form.addEventListener('submit', function(event) {
     event.preventDefault(); // Prevent default form submission
 
     responseLabel.innerHTML = 'Transforming...';
+    responseLabel.style.display = 'block';
+
     submit.style.display = 'none';
+    responseArea.mdContent = '';
 
     const formData = new FormData(form);
     const jsonData = Object.fromEntries(formData.entries()); 
@@ -24,9 +27,12 @@ form.addEventListener('submit', function(event) {
 
         responseArea.mdContent = `${response.data}`;
         submit.style.display = 'block';
-        responseLabel.innerHTML = 'Response:';
+        responseLabel.style.display = 'none';
     })
     .catch(error => {
         console.error('Error:', error);
+        responseLabel.style.display = 'none';
+        submit.style.display = 'block';
+        responseArea.mdContent = `**ERROR**:\n\n${error}`;
     });
 });

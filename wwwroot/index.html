@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Code Tranformation Sample</title>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>      
+  </head>
+  <body>
+    <form id="form">
+      <label for="prompt">Prompt:</label><br>
+      <textarea style="width: 800px;" id="prompt" name="prompt">
+        You are an expert C# developer.  You are incrementally converting an ASP.NET Framework application to the latest version of ASP.NET core, please convert the contents of this file from ASP.NET Framework to the latest version of ASP.NET core and return the complete cs file.
+      </textarea><br>
+      <label for="sourceUrl">Source URL:</label><br>
+      <input style="width: 800px;" type="text" id="sourceUrl" name="sourceUrl" value="https://raw.githubusercontent.com/jjdelorme/ContosoUniversity/master/ContosoUniversity/Controllers/CourseController.cs"><br><br>
+      <input type="submit" id="submit" value="Submit">
+    </form> 
+    
+    <textarea style="width: 800px;" id="responseArea"></textarea>
+    
+    <script src="./script.js"></script>
+  </body>
+</html>

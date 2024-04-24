@@ -1,0 +1,6 @@
+**/.mono
+**/.vscode
+**/bin
+**/obj
+**/appsettings.Development.json
+.envrc

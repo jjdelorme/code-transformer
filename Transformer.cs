@@ -117,7 +117,7 @@ public class Transformer
         try
         {
              // Required by github otherwise a 403 is returned
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", "jjdelorme");
+            _httpClient.DefaultRequestHeaders.Add("User-Agent", _options.GithubUser);
 
             using var response = await _httpClient.GetStreamAsync(url);
 
@@ -138,6 +138,13 @@ public class Transformer
         {
             _logger.LogError(ex, "Error getting file contents from {url}", url);
             throw new ApplicationException("Error getting file contents", ex);
+        }
+        finally
+        {
+            if (Directory.Exists(extractionDir))
+            {
+                Directory.Delete(extractionDir, true);
+            }
         }
     }
 

@@ -7,6 +7,7 @@ public class TransformerOptions
     public string? ProjectId { get; set; }
     public string? ModelId { get; set; }
     public string? LocationId { get; set; }
+    public string? GithubUser { get; set; }
 
     public static TransformerOptions FromConfiguration(ConfigurationManager config)
     {
